@@ -114,4 +114,4 @@ runs:
         INPUT_DEBUG: ${{ inputs.debug }}
         INPUT_GO_FLAGS: ${{ inputs.go-flags }}
         INPUT_ARGUMENTS: ${{ inputs.arguments }}
-      run: '"$GITHUB_ACTION_PATH/entrypoint.sh"'
+      run: bash "$GITHUB_ACTION_PATH/entrypoint.sh"
