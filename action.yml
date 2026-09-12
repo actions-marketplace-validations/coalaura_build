@@ -1,4 +1,4 @@
-name: Build
+name: Build with coalaura/builder
 description: Build Go projects with coalaura/builder
 
 author: coalaura
