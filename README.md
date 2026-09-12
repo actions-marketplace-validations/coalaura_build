@@ -7,7 +7,7 @@ The action runs the published Builder image directly, so it does not build anoth
 ## Usage
 
 ```yaml
-- uses: actions/checkout@v4
+- uses: actions/checkout@v7
 
 - uses: coalaura/build@v1
   with:
