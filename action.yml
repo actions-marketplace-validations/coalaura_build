@@ -1,0 +1,117 @@
+name: Build
+description: Build Go projects with coalaura/builder
+
+author: coalaura
+
+branding:
+  icon: package
+  color: blue
+
+inputs:
+  builder-version:
+    description: Version of coalaura/builder to use
+    required: false
+    default: v0.4.3
+
+  os:
+    description: Target operating system
+    required: false
+    default: linux
+
+  arch:
+    description: Target architecture
+    required: false
+    default: amd64
+
+  cgo:
+    description: Enable CGO
+    required: false
+    default: "false"
+
+  link:
+    description: CGO link mode (static or dynamic)
+    required: false
+    default: static
+
+  optimization:
+    description: Build mode (optimize or compatible)
+    required: false
+    default: optimize
+
+  minify:
+    description: Minify and compress the resulting binary
+    required: false
+    default: "false"
+
+  generate:
+    description: Run go generate ./... before building
+    required: false
+    default: "true"
+
+  gui:
+    description: Use the Windows GUI subsystem
+    required: false
+    default: "false"
+
+  package:
+    description: Go package to build
+    required: false
+
+  output:
+    description: Output file path
+    required: false
+
+  target:
+    description: Project directory or build target
+    required: false
+
+  debug:
+    description: Print commands without executing them
+    required: false
+    default: "false"
+
+  go-flags:
+    description: Additional Go build flags, one argument per line
+    required: false
+
+  arguments:
+    description: Additional arguments forwarded after --, one argument per line
+    required: false
+
+outputs:
+  path:
+    description: Absolute path to the built binary
+    value: ${{ steps.build.outputs.path }}
+
+  filename:
+    description: Filename of the built binary
+    value: ${{ steps.build.outputs.filename }}
+
+  image:
+    description: Builder Docker image used
+    value: ${{ steps.build.outputs.image }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Build
+      id: build
+      shell: bash
+      env:
+        INPUT_BUILDER_VERSION: ${{ inputs.builder-version }}
+        INPUT_OS: ${{ inputs.os }}
+        INPUT_ARCH: ${{ inputs.arch }}
+        INPUT_CGO: ${{ inputs.cgo }}
+        INPUT_LINK: ${{ inputs.link }}
+        INPUT_OPTIMIZATION: ${{ inputs.optimization }}
+        INPUT_MINIFY: ${{ inputs.minify }}
+        INPUT_GENERATE: ${{ inputs.generate }}
+        INPUT_GUI: ${{ inputs.gui }}
+        INPUT_PACKAGE: ${{ inputs.package }}
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_TARGET: ${{ inputs.target }}
+        INPUT_DEBUG: ${{ inputs.debug }}
+        INPUT_GO_FLAGS: ${{ inputs.go-flags }}
+        INPUT_ARGUMENTS: ${{ inputs.arguments }}
+      run: '"$GITHUB_ACTION_PATH/entrypoint.sh"'

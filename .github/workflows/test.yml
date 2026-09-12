@@ -1,0 +1,64 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows, linux, darwin]
+        arch: [amd64, arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Create test project
+        shell: bash
+        run: |
+          mkdir -p test-project
+
+          cat > test-project/go.mod <<'EOF_PROJECT'
+          module example.com/coalaura-build-test
+
+          go 1.27
+          EOF_PROJECT
+
+          cat > test-project/main.go <<'EOF_PROJECT'
+          package main
+
+          import "fmt"
+
+          var Version = "dev"
+
+          func main() {
+              fmt.Println(Version)
+          }
+          EOF_PROJECT
+
+      - name: Build ${{ matrix.os }}_${{ matrix.arch }}
+        id: build
+        uses: ./
+        with:
+          language: go
+          os: ${{ matrix.os }}
+          arch: ${{ matrix.arch }}
+          generate: false
+          target: ./test-project
+          output: build/test_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+          go-flags: |
+            -ldflags=-X main.Version=test
+
+      - name: Verify output
+        shell: bash
+        env:
+          OUTPUT: ${{ steps.build.outputs.path }}
+        run: test -f "$OUTPUT"
